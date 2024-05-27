@@ -1,0 +1,120 @@
+<!--Sign Up -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="scripts.js"></script>
+</head>
+<body id="indexbg">
+    <header>
+        <div id="logo">
+            <img src="media/LOGO.png" height="95px" alt="Logo">
+        </div>
+        <div id="headerLogo">
+            <img src="media/headerLogo.png" height="95px" alt="Header Logo">
+        </div>
+    </header>
+    <form id="signUp">
+        <fieldset>
+            <legend>SIGN UP FOR PROFISH</legend>
+            <div class="name">
+                <input id="fn" name="fn" type="text" placeholder="First Name" required>
+            </div>
+            <div class="name">
+                <input id="ln" name="ln" type="text" placeholder="Last Name" required>
+            </div>
+            <div class="sex" required>
+                <label for="sex">Sex:</label><br>
+                <input type="radio" id="male" name="sex" value="Male" required>
+                <label for="male">Male</label><br>
+                <input type="radio" id="female" name="sex" value="Female">
+                <label for="female">Female</label><br>
+                <input type="radio" id="pnts" name="sex" value="Prefer not to say">
+                <label for="pnts">Prefer not to say</label>
+            </div>
+            <div class="password">
+                <input id="pass" name="pass" type="password" placeholder="Password" required>
+                <label class="eye" for="togglePassword">
+                    <i id="togglePassword" class="fas fa-eye-slash"></i>
+                </label>
+            </div>
+            <input id="contactNum" name="contactNum" type="text" placeholder="Contact Number"><br>
+            <textarea id="reason" name="reason" cols="50" rows="4" placeholder="Why do you support this campaign?" required></textarea>
+            <center><input type="submit" value="SIGN UP"></center>
+        </fieldset>
+    </form>
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            const passwordInput = document.getElementById("pass");
+            const eyeIcon = document.getElementById("togglePassword");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            }
+        });
+
+        function isValidContactNumber(contactNum) {
+            return !isNaN(contactNum) && contactNum.trim() !== "";
+        }
+
+        document.getElementById("signUp").addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            
+            const requiredFields = document.querySelectorAll(".required");
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.nextElementSibling.style.display = "inline";
+                } else {
+                    field.nextElementSibling.style.display = "none";
+                }
+            });
+
+            const contactNumField = document.getElementById("contactNum");
+            if (contactNumField.value && !isValidContactNumber(contactNumField.value)) {
+                isValid = false;
+                alert("Please enter a valid contact number.");
+            }
+
+            if (isValid) {
+                const formData = new FormData(event.target);
+                const data = Object.fromEntries(formData.entries());
+
+                localStorage.setItem("formData", JSON.stringify(data));
+
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = `profile.html?${queryString}`;
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedFormData = JSON.parse(localStorage.getItem("formData"));
+            if (savedFormData) {
+                for (const [key, value] of Object.entries(savedFormData)) {
+                    const input = document.querySelector(`[name=${key}]`);
+                    if (input) {
+                        if (input.type === "radio" || input.type === "checkbox") {
+                            input.checked = input.value === value;
+                        } else {
+                            input.value = value;
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
